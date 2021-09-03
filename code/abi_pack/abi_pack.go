@@ -11,7 +11,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 
-	store "./contracts" // for demo
+	store "github.com/miguelmota/ethereum-development-with-go-book/code/contracts" // for demo
 )
 
 func main() {
@@ -48,11 +48,11 @@ func main() {
 		panic(err)
 	}
 
-	var item [32]byte
-	err = abiContract.Unpack(&item, "items", output)
+	var item []interface{}
+	item, err = abiContract.Unpack("items", output)
 	if err != nil {
 		panic(err)
 	}
 
-	fmt.Println(string(item[:])) // "bar"
+	fmt.Println(item) // "bar"
 }

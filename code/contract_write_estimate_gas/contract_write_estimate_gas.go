@@ -57,9 +57,9 @@ func main() {
 	}
 
 	estimatedGas, err := client.EstimateGas(context.Background(), ethereum.CallMsg{
-		From: fromAddress,
-		To:   &address,
-		Data: encodedData,
+		From:     fromAddress,
+		To:       &address,
+		Data:     encodedData,
 		GasPrice: gasPrice,
 	})
 	if err != nil {

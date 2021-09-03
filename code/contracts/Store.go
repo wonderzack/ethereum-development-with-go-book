@@ -141,7 +141,7 @@ func bindStore(address common.Address, caller bind.ContractCaller, transactor bi
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
 // returns.
-func (_Store *StoreRaw) Call(opts *bind.CallOpts, result interface{}, method string, params ...interface{}) error {
+func (_Store *StoreRaw) Call(opts *bind.CallOpts, result *[]interface{}, method string, params ...interface{}) error {
 	return _Store.Contract.StoreCaller.contract.Call(opts, result, method, params...)
 }
 
@@ -160,7 +160,7 @@ func (_Store *StoreRaw) Transact(opts *bind.TransactOpts, method string, params 
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
 // returns.
-func (_Store *StoreCallerRaw) Call(opts *bind.CallOpts, result interface{}, method string, params ...interface{}) error {
+func (_Store *StoreCallerRaw) Call(opts *bind.CallOpts, result *[]interface{}, method string, params ...interface{}) error {
 	return _Store.Contract.contract.Call(opts, result, method, params...)
 }
 

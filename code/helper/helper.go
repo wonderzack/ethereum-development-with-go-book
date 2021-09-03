@@ -8,7 +8,7 @@ import (
 
 	"crypto/ecdsa"
 
-	"github.com/coincircle/exchange/ethereum/token"
+	"github.com/coincircle/go-etherdelta/helpers/token"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"

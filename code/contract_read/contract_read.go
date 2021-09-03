@@ -7,7 +7,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 
-	store "./contracts" // for demo
+	store "github.com/miguelmota/ethereum-development-with-go-book/code/contracts" // for demo
 )
 
 func main() {
