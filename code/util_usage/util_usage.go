@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"math/big"
 
-	util "./util" // for demo
 	"github.com/ethereum/go-ethereum/common/hexutil"
+	util "github.com/miguelmota/ethereum-development-with-go-book/code/util" // for demo
 )
 
 func main() {
