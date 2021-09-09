@@ -18,7 +18,7 @@ func main() {
 
 	fmt.Println(tx.Hash().Hex())
 
-	msg, err := tx.AsMessage(types.NewEIP155Signer(tx.ChainId()))
+	msg, err := tx.AsMessage(types.NewEIP155Signer(tx.ChainId()), nil)
 	if err != nil {
 		log.Fatal(err)
 	}

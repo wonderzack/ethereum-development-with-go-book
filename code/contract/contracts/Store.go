@@ -4,6 +4,8 @@
 package store
 
 import (
+	"errors"
+	"math/big"
 	"strings"
 
 	ethereum "github.com/ethereum/go-ethereum"
@@ -14,19 +16,43 @@ import (
 	"github.com/ethereum/go-ethereum/event"
 )
 
+// Reference imports to suppress errors if they are not otherwise used.
+var (
+	_ = errors.New
+	_ = big.NewInt
+	_ = strings.NewReader
+	_ = ethereum.NotFound
+	_ = bind.Bind
+	_ = common.Big1
+	_ = types.BloomLookup
+	_ = event.NewSubscription
+)
+
+// StoreMetaData contains all meta data concerning the Store contract.
+var StoreMetaData = &bind.MetaData{
+	ABI: "[{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"bytes32\"}],\"name\":\"items\",\"outputs\":[{\"name\":\"\",\"type\":\"bytes32\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"version\",\"outputs\":[{\"name\":\"\",\"type\":\"string\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"key\",\"type\":\"bytes32\"},{\"name\":\"value\",\"type\":\"bytes32\"}],\"name\":\"setItem\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"name\":\"_version\",\"type\":\"string\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"name\":\"key\",\"type\":\"bytes32\"},{\"indexed\":false,\"name\":\"value\",\"type\":\"bytes32\"}],\"name\":\"ItemSet\",\"type\":\"event\"}]",
+	Bin: "0x608060405234801561001057600080fd5b506040516103d53803806103d5833981018060405281019080805182019291905050508060009080519060200190610049929190610050565b50506100f5565b828054600181600116156101000203166002900490600052602060002090601f016020900481019282601f1061009157805160ff19168380011785556100bf565b828001600101855582156100bf579182015b828111156100be5782518255916020019190600101906100a3565b5b5090506100cc91906100d0565b5090565b6100f291905b808211156100ee5760008160009055506001016100d6565b5090565b90565b6102d1806101046000396000f300608060405260043610610057576000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff16806348f343f31461005c57806354fd4d50146100a9578063f56256c714610139575b600080fd5b34801561006857600080fd5b5061008b6004803603810190808035600019169060200190929190505050610178565b60405180826000191660001916815260200191505060405180910390f35b3480156100b557600080fd5b506100be610190565b6040518080602001828103825283818151815260200191508051906020019080838360005b838110156100fe5780820151818401526020810190506100e3565b50505050905090810190601f16801561012b5780820380516001836020036101000a031916815260200191505b509250505060405180910390f35b34801561014557600080fd5b506101766004803603810190808035600019169060200190929190803560001916906020019092919050505061022e565b005b60016020528060005260406000206000915090505481565b60008054600181600116156101000203166002900480601f0160208091040260200160405190810160405280929190818152602001828054600181600116156101000203166002900480156102265780601f106101fb57610100808354040283529160200191610226565b820191906000526020600020905b81548152906001019060200180831161020957829003601f168201915b505050505081565b8060016000846000191660001916815260200190815260200160002081600019169055507fe79e73da417710ae99aa2088575580a60415d359acfad9cdd3382d59c80281d4828260405180836000191660001916815260200182600019166000191681526020019250505060405180910390a150505600a165627a7a7230582017c3e13a732c8ac8bf1a24a092160e1e21e4541a2b209b6a3b0867df4a0e6c210029",
+}
+
 // StoreABI is the input ABI used to generate the binding from.
-const StoreABI = "[{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"bytes32\"}],\"name\":\"items\",\"outputs\":[{\"name\":\"\",\"type\":\"bytes32\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"version\",\"outputs\":[{\"name\":\"\",\"type\":\"string\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"key\",\"type\":\"bytes32\"},{\"name\":\"value\",\"type\":\"bytes32\"}],\"name\":\"setItem\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"name\":\"_version\",\"type\":\"string\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"name\":\"key\",\"type\":\"bytes32\"},{\"indexed\":false,\"name\":\"value\",\"type\":\"bytes32\"}],\"name\":\"ItemSet\",\"type\":\"event\"}]"
+// Deprecated: Use StoreMetaData.ABI instead.
+var StoreABI = StoreMetaData.ABI
 
 // StoreBin is the compiled bytecode used for deploying new contracts.
-const StoreBin = `608060405234801561001057600080fd5b506040516103d53803806103d5833981018060405281019080805182019291905050508060009080519060200190610049929190610050565b50506100f5565b828054600181600116156101000203166002900490600052602060002090601f016020900481019282601f1061009157805160ff19168380011785556100bf565b828001600101855582156100bf579182015b828111156100be5782518255916020019190600101906100a3565b5b5090506100cc91906100d0565b5090565b6100f291905b808211156100ee5760008160009055506001016100d6565b5090565b90565b6102d1806101046000396000f300608060405260043610610057576000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff16806348f343f31461005c57806354fd4d50146100a9578063f56256c714610139575b600080fd5b34801561006857600080fd5b5061008b6004803603810190808035600019169060200190929190505050610178565b60405180826000191660001916815260200191505060405180910390f35b3480156100b557600080fd5b506100be610190565b6040518080602001828103825283818151815260200191508051906020019080838360005b838110156100fe5780820151818401526020810190506100e3565b50505050905090810190601f16801561012b5780820380516001836020036101000a031916815260200191505b509250505060405180910390f35b34801561014557600080fd5b506101766004803603810190808035600019169060200190929190803560001916906020019092919050505061022e565b005b60016020528060005260406000206000915090505481565b60008054600181600116156101000203166002900480601f0160208091040260200160405190810160405280929190818152602001828054600181600116156101000203166002900480156102265780601f106101fb57610100808354040283529160200191610226565b820191906000526020600020905b81548152906001019060200180831161020957829003601f168201915b505050505081565b8060016000846000191660001916815260200190815260200160002081600019169055507fe79e73da417710ae99aa2088575580a60415d359acfad9cdd3382d59c80281d4828260405180836000191660001916815260200182600019166000191681526020019250505060405180910390a150505600a165627a7a7230582017c3e13a732c8ac8bf1a24a092160e1e21e4541a2b209b6a3b0867df4a0e6c210029`
+// Deprecated: Use StoreMetaData.Bin instead.
+var StoreBin = StoreMetaData.Bin
 
 // DeployStore deploys a new Ethereum contract, binding an instance of Store to it.
 func DeployStore(auth *bind.TransactOpts, backend bind.ContractBackend, _version string) (common.Address, *types.Transaction, *Store, error) {
-	parsed, err := abi.JSON(strings.NewReader(StoreABI))
+	parsed, err := StoreMetaData.GetAbi()
 	if err != nil {
 		return common.Address{}, nil, nil, err
 	}
-	address, tx, contract, err := bind.DeployContract(auth, parsed, common.FromHex(StoreBin), backend, _version)
+	if parsed == nil {
+		return common.Address{}, nil, nil, errors.New("GetABI returned nil")
+	}
+
+	address, tx, contract, err := bind.DeployContract(auth, *parsed, common.FromHex(StoreBin), backend, _version)
 	if err != nil {
 		return common.Address{}, nil, nil, err
 	}
@@ -177,73 +203,83 @@ func (_Store *StoreTransactorRaw) Transact(opts *bind.TransactOpts, method strin
 
 // Items is a free data retrieval call binding the contract method 0x48f343f3.
 //
-// Solidity: function items( bytes32) constant returns(bytes32)
+// Solidity: function items(bytes32 ) view returns(bytes32)
 func (_Store *StoreCaller) Items(opts *bind.CallOpts, arg0 [32]byte) ([32]byte, error) {
-	var (
-		ret0 = new([32]byte)
-	)
-	out := ret0
-	err := _Store.contract.Call(opts, out, "items", arg0)
-	return *ret0, err
+	var out []interface{}
+	err := _Store.contract.Call(opts, &out, "items", arg0)
+
+	if err != nil {
+		return *new([32]byte), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new([32]byte)).(*[32]byte)
+
+	return out0, err
+
 }
 
 // Items is a free data retrieval call binding the contract method 0x48f343f3.
 //
-// Solidity: function items( bytes32) constant returns(bytes32)
+// Solidity: function items(bytes32 ) view returns(bytes32)
 func (_Store *StoreSession) Items(arg0 [32]byte) ([32]byte, error) {
 	return _Store.Contract.Items(&_Store.CallOpts, arg0)
 }
 
 // Items is a free data retrieval call binding the contract method 0x48f343f3.
 //
-// Solidity: function items( bytes32) constant returns(bytes32)
+// Solidity: function items(bytes32 ) view returns(bytes32)
 func (_Store *StoreCallerSession) Items(arg0 [32]byte) ([32]byte, error) {
 	return _Store.Contract.Items(&_Store.CallOpts, arg0)
 }
 
 // Version is a free data retrieval call binding the contract method 0x54fd4d50.
 //
-// Solidity: function version() constant returns(string)
+// Solidity: function version() view returns(string)
 func (_Store *StoreCaller) Version(opts *bind.CallOpts) (string, error) {
-	var (
-		ret0 = new(string)
-	)
-	out := ret0
-	err := _Store.contract.Call(opts, out, "version")
-	return *ret0, err
+	var out []interface{}
+	err := _Store.contract.Call(opts, &out, "version")
+
+	if err != nil {
+		return *new(string), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(string)).(*string)
+
+	return out0, err
+
 }
 
 // Version is a free data retrieval call binding the contract method 0x54fd4d50.
 //
-// Solidity: function version() constant returns(string)
+// Solidity: function version() view returns(string)
 func (_Store *StoreSession) Version() (string, error) {
 	return _Store.Contract.Version(&_Store.CallOpts)
 }
 
 // Version is a free data retrieval call binding the contract method 0x54fd4d50.
 //
-// Solidity: function version() constant returns(string)
+// Solidity: function version() view returns(string)
 func (_Store *StoreCallerSession) Version() (string, error) {
 	return _Store.Contract.Version(&_Store.CallOpts)
 }
 
 // SetItem is a paid mutator transaction binding the contract method 0xf56256c7.
 //
-// Solidity: function setItem(key bytes32, value bytes32) returns()
+// Solidity: function setItem(bytes32 key, bytes32 value) returns()
 func (_Store *StoreTransactor) SetItem(opts *bind.TransactOpts, key [32]byte, value [32]byte) (*types.Transaction, error) {
 	return _Store.contract.Transact(opts, "setItem", key, value)
 }
 
 // SetItem is a paid mutator transaction binding the contract method 0xf56256c7.
 //
-// Solidity: function setItem(key bytes32, value bytes32) returns()
+// Solidity: function setItem(bytes32 key, bytes32 value) returns()
 func (_Store *StoreSession) SetItem(key [32]byte, value [32]byte) (*types.Transaction, error) {
 	return _Store.Contract.SetItem(&_Store.TransactOpts, key, value)
 }
 
 // SetItem is a paid mutator transaction binding the contract method 0xf56256c7.
 //
-// Solidity: function setItem(key bytes32, value bytes32) returns()
+// Solidity: function setItem(bytes32 key, bytes32 value) returns()
 func (_Store *StoreTransactorSession) SetItem(key [32]byte, value [32]byte) (*types.Transaction, error) {
 	return _Store.Contract.SetItem(&_Store.TransactOpts, key, value)
 }
@@ -324,7 +360,7 @@ type StoreItemSet struct {
 
 // FilterItemSet is a free log retrieval operation binding the contract event 0xe79e73da417710ae99aa2088575580a60415d359acfad9cdd3382d59c80281d4.
 //
-// Solidity: event ItemSet(key bytes32, value bytes32)
+// Solidity: event ItemSet(bytes32 key, bytes32 value)
 func (_Store *StoreFilterer) FilterItemSet(opts *bind.FilterOpts) (*StoreItemSetIterator, error) {
 
 	logs, sub, err := _Store.contract.FilterLogs(opts, "ItemSet")
@@ -336,7 +372,7 @@ func (_Store *StoreFilterer) FilterItemSet(opts *bind.FilterOpts) (*StoreItemSet
 
 // WatchItemSet is a free log subscription operation binding the contract event 0xe79e73da417710ae99aa2088575580a60415d359acfad9cdd3382d59c80281d4.
 //
-// Solidity: event ItemSet(key bytes32, value bytes32)
+// Solidity: event ItemSet(bytes32 key, bytes32 value)
 func (_Store *StoreFilterer) WatchItemSet(opts *bind.WatchOpts, sink chan<- *StoreItemSet) (event.Subscription, error) {
 
 	logs, sub, err := _Store.contract.WatchLogs(opts, "ItemSet")
@@ -369,4 +405,16 @@ func (_Store *StoreFilterer) WatchItemSet(opts *bind.WatchOpts, sink chan<- *Sto
 			}
 		}
 	}), nil
+}
+
+// ParseItemSet is a log parse operation binding the contract event 0xe79e73da417710ae99aa2088575580a60415d359acfad9cdd3382d59c80281d4.
+//
+// Solidity: event ItemSet(bytes32 key, bytes32 value)
+func (_Store *StoreFilterer) ParseItemSet(log types.Log) (*StoreItemSet, error) {
+	event := new(StoreItemSet)
+	if err := _Store.contract.UnpackLog(event, "ItemSet", log); err != nil {
+		return nil, err
+	}
+	event.Raw = log
+	return event, nil
 }

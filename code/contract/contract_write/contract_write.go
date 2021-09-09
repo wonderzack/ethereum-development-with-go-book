@@ -3,15 +3,16 @@ package main
 import (
 	"context"
 	"crypto/ecdsa"
-	"encoding/hex"
 	"fmt"
 	"log"
 	"math/big"
 
+	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
+
+	store "github.com/miguelmota/ethereum-development-with-go-book/code/contract/contracts" // for demo
 )
 
 func main() {
@@ -37,30 +38,39 @@ func main() {
 		log.Fatal(err)
 	}
 
-	value := big.NewInt(1000000000000000000) // in wei (1 eth)
-	gasLimit := uint64(21000)                // in units
 	gasPrice, err := client.SuggestGasPrice(context.Background())
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	toAddress := common.HexToAddress("0x4592d8f8d7b001e72cb26a73e4fa1806a51ac79d")
-	var data []byte
-	tx := types.NewTransaction(nonce, toAddress, value, gasLimit, gasPrice, data)
+	auth := bind.NewKeyedTransactor(privateKey)
+	auth.Nonce = big.NewInt(int64(nonce))
+	auth.Value = big.NewInt(0)     // in wei
+	auth.GasLimit = uint64(300000) // in units
+	auth.GasPrice = gasPrice
 
-	chainID, err := client.NetworkID(context.Background())
+	address := common.HexToAddress("0x147B8eb97fD247D06C4006D269c90C1908Fb5D54")
+	instance, err := store.NewStore(address, client)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	signedTx, err := types.SignTx(tx, types.NewEIP155Signer(chainID), privateKey)
+	key := [32]byte{}
+	value := [32]byte{}
+	copy(key[:], []byte("foo"))
+	copy(value[:], []byte("bar"))
+
+	tx, err := instance.SetItem(auth, key, value)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	ts := types.Transactions{signedTx}
-	rawTxBytes := ts.GetRlp(0)
-	rawTxHex := hex.EncodeToString(rawTxBytes)
+	fmt.Printf("tx sent: %s\n", tx.Hash().Hex()) // tx sent: 0x8d490e535678e9a24360e955d75b27ad307bdfb97a1dca51d0f3035dcee3e870
 
-	fmt.Printf(rawTxHex) // f86...772
+	result, err := instance.Items(nil, key)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println(string(result[:])) // "bar"
 }
