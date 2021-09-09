@@ -13,7 +13,7 @@ import (
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
 
-	store "github.com/miguelmota/ethereum-development-with-go-book/code/contracts" // for demo
+	store "github.com/miguelmota/ethereum-development-with-go-book/code/contract/contracts" // for demo
 )
 
 func main() {

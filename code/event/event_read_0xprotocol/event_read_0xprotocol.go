@@ -8,12 +8,12 @@ import (
 	"strconv"
 	"strings"
 
-	exchange "./contracts_0xprotocol" // for demo
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/ethclient"
+	exchange "github.com/miguelmota/ethereum-development-with-go-book/code/event/contracts_0xprotocol" // for demo
 )
 
 // LogFill ...

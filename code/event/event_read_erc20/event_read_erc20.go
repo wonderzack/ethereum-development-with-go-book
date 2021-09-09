@@ -12,7 +12,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
-	token "github.com/miguelmota/ethereum-development-with-go-book/code/contracts_erc20" // for demo
+	token "github.com/miguelmota/ethereum-development-with-go-book/code/contract/contracts_erc20" // for demo
 )
 
 // LogTransfer ..
