@@ -5,12 +5,12 @@ import (
 	"log"
 
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/ethdb"
+	"github.com/ethereum/go-ethereum/ethdb/memorydb"
 	ethtrie "github.com/ethereum/go-ethereum/trie"
 )
 
 func main() {
-	diskdb := ethdb.NewMemDatabase()
+	diskdb := memorydb.New()
 	triedb := ethtrie.NewDatabase(diskdb)
 	trie, err := ethtrie.New(common.Hash{}, triedb)
 	if err != nil {
