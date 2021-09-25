@@ -35,6 +35,11 @@ func main() {
 		log.Fatal(err)
 	}
 
+	logTransferSig := []byte("Transfer(address,address,uint256)")
+	LogApprovalSig := []byte("Approval(address,address,uint256)")
+	logTransferSigHash := crypto.Keccak256Hash(logTransferSig)
+	logApprovalSigHash := crypto.Keccak256Hash(LogApprovalSig)
+
 	// 0x Protocol (ZRX) token address
 	contractAddress := common.HexToAddress("0xe41d2489571d322189246dafa5ebde1f4699f498")
 	query := ethereum.FilterQuery{
@@ -42,6 +47,14 @@ func main() {
 		ToBlock:   big.NewInt(6383840),
 		Addresses: []common.Address{
 			contractAddress,
+		},
+		Topics: [][]common.Hash{
+			{logTransferSigHash},	// filter transfer
+			{},
+			{
+				common.HexToAddress("0x4aEE792A88eDDA29932254099b9d1e06D537883f").Hash(),  // filter transfer
+				common.HexToAddress("0x924CD9b60F4173DCDd5254ddD38C4F9CAB68FE6b").Hash(),  // filter transfer
+			},
 		},
 	}
 
@@ -54,11 +67,6 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	logTransferSig := []byte("Transfer(address,address,uint256)")
-	LogApprovalSig := []byte("Approval(address,address,uint256)")
-	logTransferSigHash := crypto.Keccak256Hash(logTransferSig)
-	logApprovalSigHash := crypto.Keccak256Hash(LogApprovalSig)
 
 	for _, vLog := range logs {
 		fmt.Printf("Log Block Number: %d\n", vLog.BlockNumber)
