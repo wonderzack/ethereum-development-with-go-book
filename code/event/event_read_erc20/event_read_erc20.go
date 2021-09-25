@@ -70,11 +70,12 @@ func main() {
 
 			var transferEvent LogTransfer
 
-			err := contractAbi.Unpack(&transferEvent, "Transfer", vLog.Data)
+			logs, err := contractAbi.Unpack("Transfer", vLog.Data)
 			if err != nil {
 				log.Fatal(err)
 			}
 
+			transferEvent.Tokens = (logs[0]).(*big.Int)
 			transferEvent.From = common.HexToAddress(vLog.Topics[1].Hex())
 			transferEvent.To = common.HexToAddress(vLog.Topics[2].Hex())
 
@@ -87,11 +88,12 @@ func main() {
 
 			var approvalEvent LogApproval
 
-			err := contractAbi.Unpack(&approvalEvent, "Approval", vLog.Data)
+			logs, err := contractAbi.Unpack("Approval", vLog.Data)
 			if err != nil {
 				log.Fatal(err)
 			}
 
+			approvalEvent.Tokens = (logs[0]).(*big.Int)
 			approvalEvent.TokenOwner = common.HexToAddress(vLog.Topics[1].Hex())
 			approvalEvent.Spender = common.HexToAddress(vLog.Topics[2].Hex())
 
